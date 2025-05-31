@@ -15,7 +15,7 @@ class User(Base):
     adress = Column(String(100))
     phone_number = Column(String(15))
     email = Column(String(150), unique=True)
-    role = Column(String(10))
+    role = Column(String(10), default='user')
 
 
 class Country(Base):
