@@ -1,14 +1,60 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models.product_model import Product
-from app.schemas.product import ProductCreate, ProductUpdate, ProductOut
+from app.models.product_model import *
+from app.schemas.product import *
 from typing import List
 from fastapi import FastAPI
 
-app = FastAPI()
+
 
 router = APIRouter(prefix="/products", tags=["Products"])
+product_item_router = APIRouter(prefix='/product-item', tags=['Product Items'])
+
+
+
+@product_item_router.post('/', response_model=ProductItemRead)
+def create_product_item(item: ProductItemCreate, db: Session = Depends(get_db)):
+    db_item = ProductItem(**item.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+@product_item_router.get('/', response_model=list[ProductItemRead])
+def read_product_items(db: Session = Depends(get_db)):
+    items = db.query(ProductItem).all()
+    return items
+
+
+@product_item_router.get('/{item_id}', response_model=ProductItemRead)
+def read_product_item(item_id: int, db: Session = Depends(get_db)):
+    item  = db.query(ProductItem).filter(ProductItem.id==item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail='Product item not found')
+    return item
+
+@product_item_router.put('/{item_id}', response_model=ProductItemRead)
+def update_product_item(item_id: int,updated_item: ProductItemCreate, db: Session = Depends(get_db)):
+    item = db.query(ProductItem).filter(ProductItem.id==item_id).first()
+    if not item:
+        raise HTTPException(status_code=404,  detail='Product item not found')
+    for key, value in updated_item.dict().items():
+        setattr(item, key, value)
+    db.commit()
+    db.refresh(item)
+    return item
+
+@product_item_router.delete('/{item_id}')
+def delete_product_item(item_id: int, db: Session =Depends(get_db)):
+    item = db.query(ProductItem).filter(ProductItem.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404,  detail='Product item not found')
+    db.delete(item)
+    db.commit()
+    return {'detail': 'Deleted successfully'}
+
 
 @router.post("/", response_model=ProductOut)
 def create_product(product: ProductCreate, db: Session = Depends(get_db)):

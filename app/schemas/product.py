@@ -18,3 +18,21 @@ class ProductOut(ProductBase):
 
     class Config:
         orm_mode = True
+
+class ProductItemsBase(BaseModel):
+    product_id : int
+    code: str
+
+
+
+class ProductItemCreate(ProductItemsBase):
+    pass
+
+
+class ProductItemRead(ProductItemsBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+        
+
