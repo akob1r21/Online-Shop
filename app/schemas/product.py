@@ -55,3 +55,37 @@ class ProductPriceRead(ProductPriceBase):
     class Config:
         orm_mode = True
         
+
+
+class ProductImageBase(BaseModel):
+    product_item_id: int
+    color_id: int
+    image: str
+
+class ProductImageCreate(ProductImageBase):
+    pass
+
+class ProductImageRead(ProductImageBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+
+
+class ColorBase(BaseModel):
+    color_name: str
+    color_code: str
+
+class ColorCreate(ColorBase):
+    pass
+
+class ColorUpdate(ColorBase):
+    pass
+
+class ColorRead(ColorBase):
+    id: int
+
+    class Config:
+        orm_mode = True

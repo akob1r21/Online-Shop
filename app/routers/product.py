@@ -11,6 +11,68 @@ from fastapi import FastAPI
 router = APIRouter(prefix="/products", tags=["Products"])
 product_item_router = APIRouter(prefix='/product-item', tags=['Product Items'])
 product_price_router = APIRouter(prefix="/product-prices", tags=["Product Prices"])
+product_image_router = APIRouter(prefix="/product-images", tags=["Product Images"])
+color_router = APIRouter(prefix="/colors", tags=["Colors"])
+
+@color_router.get("/", response_model=list[ColorRead])
+def get_colors(db: Session = Depends(get_db)):
+    return db.query(Color).all()
+
+@color_router.post("/", response_model=ColorRead)
+def create_color(color: ColorCreate, db: Session = Depends(get_db)):
+    db_color = Color(**color.dict())
+    db.add(db_color)
+    db.commit()
+    db.refresh(db_color)
+    return db_color
+
+@color_router.put("/{id}", response_model=ColorRead)
+def update_color(id: int, color: ColorUpdate, db: Session = Depends(get_db)):
+    db_color = db.query(Color).get(id)
+    if not db_color:
+        raise HTTPException(status_code=404, detail="Color not found")
+    for field, value in color.dict().items():
+        setattr(db_color, field, value)
+    db.commit()
+    db.refresh(db_color)
+    return db_color
+
+@color_router.delete("/{id}")
+def delete_color(id: int, db: Session = Depends(get_db)):
+    db_color = db.query(Color).get(id)
+    if not db_color:
+        raise HTTPException(status_code=404, detail="Color not found")
+    db.delete(db_color)
+    db.commit()
+    return {"detail": "Color deleted"}
+
+@product_image_router.get("/{product_id}", response_model=list[ProductImageRead])
+def get_product_images(product_id: int, db: Session = Depends(get_db)):
+    items = db.query(ProductItem).filter(ProductItem.product_id == product_id).all()
+    if not items:
+        return []
+    
+    images = []
+    for item in items:
+        images += db.query(ProductImage).filter(ProductImage.product_item_id == item.id).all()
+    return images
+
+@product_image_router.post("/", response_model=ProductImageRead)
+def create_product_image(image: ProductImageCreate, db: Session = Depends(get_db)):
+    db_image = ProductImage(**image.dict())
+    db.add(db_image)
+    db.commit()
+    db.refresh(db_image)
+    return db_image
+
+@product_image_router.delete("/{id}")
+def delete_product_image(id: int, db: Session = Depends(get_db)):
+    image = db.query(ProductImage).get(id)
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    db.delete(image)
+    db.commit()
+    return {"detail": "Image deleted"}
 
 @product_price_router.get("/", response_model=list[ProductPriceRead])
 def get_all_prices(db: Session = Depends(get_db)):
