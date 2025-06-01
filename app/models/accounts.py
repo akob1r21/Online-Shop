@@ -34,6 +34,8 @@ class Currency(Base):
     currency_rate = Column(Integer)
 
     country = relationship('Country', back_populates='currencies')
+    product_prices = relationship('ProductPrice', back_populates='currency')
+
 
 
 class Category(Base):
