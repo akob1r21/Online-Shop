@@ -36,3 +36,22 @@ class ProductItemRead(ProductItemsBase):
         orm_mode = True
         
 
+
+class ProductPriceBase(BaseModel):
+    product_id : int
+    currencies_id: int
+    price: int
+    amount: int
+
+
+
+class ProductPriceCreate(ProductPriceBase):
+    pass
+
+
+class ProductPriceRead(ProductPriceBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+        

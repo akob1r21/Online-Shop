@@ -10,6 +10,41 @@ from fastapi import FastAPI
 
 router = APIRouter(prefix="/products", tags=["Products"])
 product_item_router = APIRouter(prefix='/product-item', tags=['Product Items'])
+product_price_router = APIRouter(prefix="/product-prices", tags=["Product Prices"])
+
+@product_price_router.get("/", response_model=list[ProductPriceRead])
+def get_all_prices(db: Session = Depends(get_db)):
+    return db.query(ProductPrice).all()
+
+@product_price_router.post("/", response_model=ProductPriceRead)
+def create_price(price_data: ProductPriceCreate, db: Session = Depends(get_db)):
+    new_price = ProductPrice(**price_data.dict())
+    db.add(new_price)
+    db.commit()
+    db.refresh(new_price)
+    return new_price
+
+
+@product_price_router.put("/{id}", response_model=ProductPriceRead)
+def update_price(id: int, price_data: ProductPriceCreate, db: Session = Depends(get_db)):
+    price = db.query(ProductPrice).filter(ProductPrice.id == id).first()
+    if not price:
+        raise HTTPException(status_code=404, detail="Price not found")
+    for key, value in price_data.dict().items():
+        setattr(price, key, value)
+    db.commit()
+    db.refresh(price)
+    return price
+
+
+@product_price_router.delete("/{id}")
+def delete_price(id: int, db: Session = Depends(get_db)):
+    price = db.query(ProductPrice).filter(ProductPrice.id == id).first()
+    if not price:
+        raise HTTPException(status_code=404, detail="Price not found")
+    db.delete(price)
+    db.commit()
+    return {"detail": "Price deleted"}
 
 
 
