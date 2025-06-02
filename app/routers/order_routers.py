@@ -1,16 +1,29 @@
-# routes/order_routes.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.schemas.order_schemas import OrderCreate, OrderRead, PaymentCreate, PaymentRead, SizeCreate, SizeRead, SizeStockCreate, SizeStockRead, ColorStockCreate, ColorStockRead, ProductCreate, ProductRead, ColorCreate, ColorRead
-from app.crud.order_crud import create_order, get_order, create_payment, get_payment, create_size, get_size, create_size_stock, create_color_stock, create_product, create_color
+from app.schemas.order_schemas import (
+    OrderCreate, OrderRead, PaymentCreate, PaymentRead, SizeCreate,
+    SizeRead, SizeStockCreate, SizeStockRead, ColorStockCreate,
+    ColorStockRead, ProductCreate, ProductRead, ColorCreate, ColorRead)
+from app.crud.order_crud import (
+    create_order, get_order, create_payment, get_payment, create_size,
+    get_size, create_size_stock, create_color_stock, create_product,
+    create_color, get_user_orders, get_user_payments)
 
+# routes/order_routes.py
 
 order_router = APIRouter(prefix="/orders", tags=["Orders"])
+
+
+@order_router.get("/orders/{user_id}", response_model=list[OrderRead])
+def read_user_orders(user_id: int, db: Session = Depends(get_db)):
+    return get_user_orders(db, user_id)
+
 
 @order_router.post("/", response_model=OrderRead)
 def create_new_order(order: OrderCreate, db: Session = Depends(get_db)):
     return create_order(db, order)
+
 
 @order_router.get("/{order_id}", response_model=OrderRead)
 def read_order(order_id: int, db: Session = Depends(get_db)):
@@ -33,6 +46,11 @@ def read_payment(payment_id: int, db: Session = Depends(get_db)):
     if not payment:
         raise HTTPException(status_code=404, detail="Payment not found")
     return payment
+
+
+@payment_router.get("/payments/{user_id}", response_model=list[PaymentRead])
+def read_user_payments(user_id: int, db: Session = Depends(get_db)):
+    return get_user_payments(db, user_id)
 
 # routes/size_routes.py
 
