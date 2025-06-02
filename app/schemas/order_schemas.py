@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from enum import Enum
 
 # schemas/order_schemas.py
 
 class OrderItemBase(BaseModel):
-    product_id: int
+    product_item: int
     quantity: int
     size_id: int
     color_id: int
@@ -18,10 +19,15 @@ class OrderItemRead(OrderItemBase):
     class Config:
         orm_mode = True
 
+class OrderStatusEnum(str, Enum):
+    accepted = "қабул шуд"
+    on_the_way = "дар роҳ"
+    delivered = "расид"
+
 class OrderBase(BaseModel):
-    user_id: int
     cargo_address: str
     amount: float
+    status: OrderStatusEnum = OrderStatusEnum.accepted
 
 class OrderCreate(OrderBase):
     items: List[OrderItemCreate]

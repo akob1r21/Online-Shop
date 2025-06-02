@@ -5,7 +5,14 @@ from datetime import datetime
 
 from app.db.database import Base
 from app.models.accounts import User
-from app.models.product_model import Product, Color
+from app.models.product_model import ProductItem, Color
+
+
+class OrderStatusEnum(PyEnum):
+    accepted = "қабул шуд"
+    on_the_way = "дар роҳ"
+    delivered = "расид"
+
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -14,6 +21,7 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     cargo_address = Column(String(255))
     amount = Column(Float)
+    status = Column(Enum(OrderStatusEnum), default=OrderStatusEnum.accepted)
 
     user = relationship("User", backref="orders")
     items = relationship("OrderItem", back_populates="order")
@@ -32,11 +40,11 @@ class SizeStock(Base):
     __tablename__ = 'size_stocks'
 
     id = Column(Integer, primary_key=True)
-    product_item = Column(Integer, ForeignKey('products.id'))
+    product_item = Column(Integer, ForeignKey('product_items.id'))
     size_id = Column(Integer, ForeignKey('sizes.id'))
     quantity = Column(Integer)
 
-    product = relationship("Product", backref="size_stocks")
+    product = relationship("ProductItem", backref="size_stocks")
     size = relationship("Size", backref="size_stocks")
 
 
@@ -44,11 +52,11 @@ class ColorStock(Base):
     __tablename__ = 'color_stocks'
 
     id = Column(Integer, primary_key=True)
-    product_item = Column(Integer, ForeignKey('products.id'))
+    product_item = Column(Integer, ForeignKey('product_items.id'))
     color_id = Column(Integer, ForeignKey('colors.id'))
     quantity = Column(Integer)
 
-    product = relationship("Product", backref="color_stocks")
+    product = relationship("ProductItem", backref="color_stocks")
     color = relationship("Color", backref="color_stocks")
 
 
@@ -71,12 +79,12 @@ class OrderItem(Base):
 
     id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey('orders.id'))
-    product_id = Column(Integer, ForeignKey('products.id'))
+    product_item = Column(Integer, ForeignKey('product_items.id'))
     quantity = Column(Integer)
     size_id = Column(Integer, ForeignKey('sizes.id'))
     color_id = Column(Integer, ForeignKey('colors.id'))
 
     order = relationship("Order", back_populates="items")
-    product = relationship("Product", backref="order_items")
+    product = relationship("ProductItem", backref="order_items")
     size = relationship("Size", backref="order_items")
     color = relationship("Color", backref="order_items")

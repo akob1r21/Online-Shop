@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from app.routers.order_routers import *
 from app.routers.product import *
 from app.db.database import Base,engine
+from app.models.models import *
+from app.models.accounts import *
 
 Base.metadata.create_all(bind=engine)
 

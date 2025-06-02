@@ -10,14 +10,15 @@ def create_order(db: Session, order_data: OrderCreate) -> Order:
     order = Order(
         user_id=order_data.user_id,
         cargo_address=order_data.cargo_address,
-        amount=order_data.amount
+        amount=order_data.amount,
+        status=order_data.status
     )
     db.add(order)
     db.flush()
     for item in order_data.items:
         db_item = OrderItem(
             order_id=order.id,
-            product_id=item.product_id,
+            product_item=item.product_item,
             quantity=item.quantity,
             size_id=item.size_id,
             color_id=item.color_id
@@ -101,3 +102,9 @@ def create_color(db: Session, color_data: ColorCreate) -> Color:
     db.commit()
     db.refresh(color)
     return color
+
+def get_user_orders(db: Session, user_id: int) -> list[Order]:
+    return db.query(Order).filter(Order.user_id == user_id).all()
+
+def get_user_payments(db: Session, user_id: int) -> list[Payment]:
+    return db.query(Payment).filter(Payment.user_id == user_id).all()
