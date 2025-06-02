@@ -1,5 +1,7 @@
+
 from fastapi import FastAPI
 from app.routers.order_routers import *
+from app.routers.product import *
 from app.db.database import Base,engine
 from app.models.models import *
 from app.models.accounts import *
@@ -12,4 +14,8 @@ app.include_router(order_router)
 app.include_router(payment_router)
 app.include_router(size_router)
 app.include_router(stock_router)
-app.include_router(product_router)
+app.include_router(router)
+app.include_router(product_item_router)
+app.include_router(product_image_router)
+app.include_router(product_price_router)
+app.include_router(color_router)
