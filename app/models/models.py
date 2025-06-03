@@ -1,11 +1,10 @@
-from sqlalchemy import String, Integer, Enum, Column, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy import (
+    String, Integer, Enum, Column, Float, DateTime, Boolean, ForeignKey)
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 from datetime import datetime
 
 from app.db.database import Base
-from app.models.accounts import User
-from app.models.product_model import ProductItem, Color
 
 
 class OrderStatusEnum(PyEnum):
