@@ -82,6 +82,8 @@ class OrderItem(Base):
     quantity = Column(Integer)
     size_id = Column(Integer, ForeignKey('sizes.id'))
     color_id = Column(Integer, ForeignKey('colors.id'))
+    barcode = Column(String(12), unique=True, nullable=True)
+    status = Column(String(10), default='buyed')
 
     order = relationship("Order", back_populates="items")
     product = relationship("ProductItem", backref="order_items")

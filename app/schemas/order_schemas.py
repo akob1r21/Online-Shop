@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from enum import Enum
 
@@ -11,10 +11,17 @@ class OrderItemBase(BaseModel):
     quantity: int
     size_id: int
     color_id: int
+    barcode: Optional[str] = None
+    status: Optional[str] = "buyed"
 
 
 class OrderItemCreate(OrderItemBase):
     pass
+
+
+class OrderItemUpdate(BaseModel):
+    barcode: Optional[str] = None
+    status: Optional[str] = None
 
 
 class OrderItemRead(OrderItemBase):

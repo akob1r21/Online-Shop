@@ -4,11 +4,13 @@ from app.db.database import get_db
 from app.schemas.order_schemas import (
     OrderCreate, OrderRead, PaymentCreate, PaymentRead, SizeCreate,
     SizeRead, SizeStockCreate, SizeStockRead, ColorStockCreate,
-    ColorStockRead, ProductCreate, ProductRead, ColorCreate, ColorRead)
+    ColorStockRead, ProductCreate, ProductRead, ColorCreate, ColorRead,
+    OrderItemRead, OrderItemUpdate)
 from app.crud.order_crud import (
     create_order, get_order, create_payment, get_payment, create_size,
     get_size, create_size_stock, create_color_stock, create_product,
-    create_color, get_user_orders, get_user_payments)
+    create_color, get_user_orders, get_user_payments,
+    get_order_item_by_barcode)
 
 # routes/order_routes.py
 
@@ -31,6 +33,21 @@ def read_order(order_id: int, db: Session = Depends(get_db)):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
+
+
+@order_router.patch("/order-items/{item_id}", response_model=OrderItemRead)
+def update_order_item(item_id: int, data: OrderItemUpdate,
+                      db: Session = Depends(get_db)):
+    return update_order_item(db, item_id, data)
+
+
+@order_router.get("/order-items/by-barcode/{barcode}",
+                  response_model=OrderItemRead)
+def get_by_barcode(barcode: str, db: Session = Depends(get_db)):
+    item = get_order_item_by_barcode(db, barcode)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Order item not found")
+    return item
 
 # routes/payment_routes.py
 
