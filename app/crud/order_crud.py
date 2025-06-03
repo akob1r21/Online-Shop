@@ -3,7 +3,7 @@ from app.models.models import (
     Order, OrderItem, Payment, Size, SizeStock, ColorStock)
 from app.schemas.order_schemas import (
     OrderCreate, ProductCreate, ColorCreate, PaymentCreate, SizeStockCreate,
-    ColorStockCreate, SizeCreate)
+    ColorStockCreate, SizeCreate, OrderItemUpdate)
 from app.models.product_model import Product, Color
 
 # crud/order_crud.py
@@ -118,3 +118,19 @@ def get_user_orders(db: Session, user_id: int) -> list[Order]:
 
 def get_user_payments(db: Session, user_id: int) -> list[Payment]:
     return db.query(Payment).filter(Payment.user_id == user_id).all()
+
+
+def update_order_item(db: Session, item_id: int, update_data: OrderItemUpdate):
+    item = db.query(OrderItem).filter(OrderItem.id == item_id).first()
+    if item:
+        if update_data.barcode is not None:
+            item.barcode = update_data.barcode
+        if update_data.status is not None:
+            item.status = update_data.status
+        db.commit()
+        db.refresh(item)
+    return item
+
+
+def get_order_item_by_barcode(db: Session, barcode: str):
+    return db.query(OrderItem).filter(OrderItem.barcode == barcode).first()
