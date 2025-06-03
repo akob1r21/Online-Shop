@@ -34,11 +34,14 @@ def read_order(order_id: int, db: Session = Depends(get_db)):
 
 # routes/payment_routes.py
 
+
 payment_router = APIRouter(prefix="/payments", tags=["Payments"])
+
 
 @payment_router.post("/", response_model=PaymentRead)
 def create_new_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     return create_payment(db, payment)
+
 
 @payment_router.get("/{payment_id}", response_model=PaymentRead)
 def read_payment(payment_id: int, db: Session = Depends(get_db)):
@@ -54,11 +57,14 @@ def read_user_payments(user_id: int, db: Session = Depends(get_db)):
 
 # routes/size_routes.py
 
+
 size_router = APIRouter(prefix="/sizes", tags=["Sizes"])
+
 
 @size_router.post("/", response_model=SizeRead)
 def create_new_size(size: SizeCreate, db: Session = Depends(get_db)):
     return create_size(db, size)
+
 
 @size_router.get("/{size_id}", response_model=SizeRead)
 def read_size(size_id: int, db: Session = Depends(get_db)):
@@ -69,23 +75,31 @@ def read_size(size_id: int, db: Session = Depends(get_db)):
 
 # routes/stock_routes.py
 
+
 stock_router = APIRouter(prefix="/stocks", tags=["Stocks"])
 
+
 @stock_router.post("/size", response_model=SizeStockRead)
-def create_new_size_stock(size_stock: SizeStockCreate, db: Session = Depends(get_db)):
+def create_new_size_stock(size_stock: SizeStockCreate,
+                          db: Session = Depends(get_db)):
     return create_size_stock(db, size_stock)
 
+
 @stock_router.post("/color", response_model=ColorStockRead)
-def create_new_color_stock(color_stock: ColorStockCreate, db: Session = Depends(get_db)):
+def create_new_color_stock(color_stock: ColorStockCreate,
+                           db: Session = Depends(get_db)):
     return create_color_stock(db, color_stock)
 
 # routes/product_routes.py
 
+
 product_router = APIRouter(prefix="/products", tags=["Products"])
+
 
 @product_router.post("/", response_model=ProductRead)
 def create_new_product(product: ProductCreate, db: Session = Depends(get_db)):
     return create_product(db, product)
+
 
 @product_router.post("/colors", response_model=ColorRead)
 def create_new_color(color: ColorCreate, db: Session = Depends(get_db)):
