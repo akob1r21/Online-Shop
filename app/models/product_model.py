@@ -13,7 +13,8 @@ class Product(Base):
     title = Column(String(50))
     description = Column(String)
     percentage = Column(Integer)
-
+    amount = Column(Numeric)
+    
     subcategory = relationship(SubCategory, back_populates='products')
     product_prices = relationship('ProductPrice', back_populates='product')
     product_items = relationship('ProductItem', back_populates='product')
@@ -26,7 +27,7 @@ class ProductPrice(Base):
     product_id = Column(Integer, ForeignKey('products.id'))
     currencies_id = Column(Integer, ForeignKey('currency.id'))
     price = Column(Numeric)
-    amount = Column(Numeric)
+    
 
     product = relationship(Product, back_populates='product_prices')
     currency = relationship(Currency, back_populates='product_prices')
