@@ -99,3 +99,36 @@ def delete_category(db: Session, id: int) -> Category:
     db.delete(category)
     db.commit()
     return category
+
+
+def create_subcategory(db: Session, sub_data: SubCategoryBase) -> SubCategory:
+    subcategory = SubCategory(**sub_data.dict())
+    db.add(subcategory)
+    db.commit()
+    db.refresh(subcategory)
+    return subcategory
+
+
+def get_subcategory(db: Session, id: int = None) -> SubCategory:
+    if id is None:
+        return db.query(SubCategory).all()
+    else: 
+        return db.query(SubCategory).filter(SubCategory.id==id).first()
+    
+def update_subcategory(db: Session, sub_data: SubCategoryBase, id: int) -> SubCategory:
+    subcategory = db.query(SubCategory).filter(SubCategory.id==id).first()
+    subcategory.category_id = sub_data.category_id
+    subcategory.title = sub_data.title,
+    subcategory.description = sub_data.description,
+    subcategory.iamge = sub_data.iamge
+    subcategory.is_active = sub_data.is_active
+    db.commit()
+    db.refresh(subcategory)
+    return subcategory
+
+
+def delete_subcategory(db: Session, id: int) -> SubCategory:
+    subcategory = db.query(SubCategory).filter(SubCategory.id==id).first()
+    db.delete(subcategory)
+    db.commit()
+    return SubCategory
