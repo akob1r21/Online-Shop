@@ -161,3 +161,19 @@ def delete_subcategory_route(subcategory_id: int, db: Session = Depends(get_db))
     if not existing_subcategory:
         raise HTTPException(status_code=404, detail="SubCategory not found")
     return delete_subcategory(db, subcategory_id)
+
+
+@router.get('/categories-with-subcategories/{category_id}', response_model=CategoryOut)
+def read_category_with_subcategories(category_id: int, db: Session = Depends(get_db)):
+    category = get_category(db, category_id)
+    
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    # Fetch subcategories based on category_id
+    subcategories = db.query(SubCategoryOut).filter(SubCategoryOut.category_id == category_id).all()
+
+    # Attach subcategories to the category object
+    category.subcategories = subcategories
+
+    return category
