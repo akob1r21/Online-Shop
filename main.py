@@ -5,6 +5,9 @@ from app.routers.order_routers import (
 from app.routers.product import (
     router, product_item_router, product_image_router, product_price_router,
     color_router)
+from app.routers.acount_router import(
+    country_router
+)
 from app.db.database import Base, engine
 
 Base.metadata.create_all(bind=engine)
@@ -21,3 +24,4 @@ app.include_router(product_item_router)
 app.include_router(product_image_router)
 app.include_router(product_price_router)
 app.include_router(color_router)
+app.include_router(country_router)
