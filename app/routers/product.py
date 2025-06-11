@@ -329,6 +329,24 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     
     return product
 
+
+
+@router.get("/{product_id}/colors", response_model=List[ProductColorImageOut])
+def get_colors_with_images(product_id: int, db: Session = Depends(get_db)):
+    product_items = db.query(ProductItem).filter(ProductItem.product_id == product_id).all()
+    result = []
+    for item in product_items:
+        images = db.query(ProductImage).filter(ProductImage.product_item_id == item.id).all()
+        for image in images:
+            result.append({
+                "color_id": image.color.id,
+                "color_name": image.color.color_name,
+                "color_code": image.color.color_code,
+                "image": image.image
+            })
+    return result
+
+
 @router.put("/{product_id}", response_model=ProductOut)
 def update_product(product_id: int, updated: ProductCreate, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == product_id).first()
