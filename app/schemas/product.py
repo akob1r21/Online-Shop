@@ -110,3 +110,9 @@ class SizeOut(SizeBase):
     id: int
     class Config:
         orm_mode = True
+
+class ProductColorImageOut(BaseModel):
+    color_id: int
+    color_name: str
+    color_code: str
+    image: str
