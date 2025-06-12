@@ -8,6 +8,7 @@ from app.schemas.accounts import (
     CurrencyBase, CurrencyOut,
     CategoryBase, CategoryOut,
     SubCategoryBase, SubCategoryOut,
+    ProductOut
 )
 from app.crud.account import (
     create_country, get_country, update_country, delete_country,
@@ -177,3 +178,18 @@ def read_category_with_subcategories(category_id: int, db: Session = Depends(get
     category.subcategories = subcategories
 
     return category
+
+@router.get('/subcategories-with-products/{subcategory_id}', response_model=SubCategoryOut)
+def read_subcategory_with_products(subcategory_id: int, db: Session = Depends(get_db)):
+    subcategory = get_subcategory(db, subcategory_id)
+        
+    if not subcategory:
+        raise HTTPException(status_code=404, detail="SubCategory not found")
+        
+    # Fetch products based on subcategory_id
+    products = db.query(ProductOut).filter(ProductOut.subcategory_id == subcategory_id).all()
+
+    # Attach products to the subcategory object
+    subcategory.products = products
+
+    return subcategory
